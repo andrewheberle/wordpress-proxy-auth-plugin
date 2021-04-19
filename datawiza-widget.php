@@ -157,7 +157,7 @@ class DatawizaSignIn
         if ($jwksUrl !== '') {
             try {
                 $jwks = json_decode(file_get_contents($jwksUrl));
-                $key = JWK::parseKeySet($jwks);
+                $key = JWT::parseKeySet($jwks);
             } catch (Exception $e) {
                 $key = '';
             }
