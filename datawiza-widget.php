@@ -18,6 +18,7 @@ require 'includes/datawiza-admin.php';
 
 use Exception;
 use Firebase\JWT\JWT;
+use Firebase\JWT\JWK;
 use Firebase\JWT\SignatureInvalidException;
 use Monolog\Handler\FirePHPHandler;
 use Monolog\Handler\StreamHandler;
@@ -157,7 +158,7 @@ class DatawizaSignIn
         if ($jwksUrl !== '') {
             try {
                 $jwks = json_decode(file_get_contents($jwksUrl));
-                $key = JWT::parseKeySet($jwks);
+                $key = JWK::parseKeySet($jwks);
             } catch (Exception $e) {
                 $key = '';
             }
