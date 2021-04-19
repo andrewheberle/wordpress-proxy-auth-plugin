@@ -49,7 +49,8 @@ class DatawizaSignIn
 
     public function logUserOutOfAccessBroker()
     {
-        if (!isset($_SERVER['HTTP_DW_TOKEN']) || !$this->verifyToken($_SERVER['HTTP_DW_TOKEN'])) {
+        $jwtHeader = $this->getHeader();
+        if (!isset($_SERVER[$jwtHeader]) || !$this->verifyToken($_SERVER[$jwtHeader])) {
             return;
         }
         if (!isset($_GET['action']) || $_GET['action'] !== 'logout') {
@@ -63,15 +64,16 @@ class DatawizaSignIn
     public function logUserInWordpress()
     {
 
-        // If we cannot extract the dw-token from header
-        if (!isset($_SERVER['HTTP_DW_TOKEN'])) {
+        // If we cannot extract the JWT from header
+        $jwtHeader = $this->getHeader();
+        if (!isset($_SERVER[$jwtHeader])) {
             $this->error = 'Proxy Auth Plugin is enabled, but it does not receive the expected JWT. Please double check your reverse proxy configuration';
             return;
         }
-        $dw_token = $_SERVER['HTTP_DW_TOKEN'];
-        $key = get_option('datawiza-private-secret');
+        $jwt_token = $_SERVER[$jwtHeader];
+        $key = $this->getKey();
         try {
-            $payload = JWT::decode($dw_token, $key, array('HS256'));
+            $payload = JWT::decode($jwt_token, $key, array('HS256'));
         } catch (SignatureInvalidException $e) {
             $this->error = 'Proxy Auth Plugin cannot verify the JWT. Please double check if your JWT\'s private secret is configured correctly';
             return;
@@ -139,7 +141,7 @@ class DatawizaSignIn
 
     private function verifyToken($jwt)
     {
-        $key = get_option('datawiza-private-secret');
+        $key = $this->getKey();
         try {
             $payload = JWT::decode($jwt, $key, array('HS256'));
         } catch (SignatureInvalidException $e) {
@@ -148,6 +150,28 @@ class DatawizaSignIn
             return false;
         }
         return true;
+    }
+
+    private function getKey() {
+        $jwksUrl = get_option('datawiza-jwks-url');
+        if ($jwksUrl !== '') {
+            try {
+                $jwks = json_parse(file_get_contents($jwksUrl));
+                $key = JWK::parseKeySet($jwks);
+            } catch {
+                $key = '';
+            }
+        } else {
+          $key = get_option('datawiza-private-secret');
+        }
+
+        return $key;
+    }
+
+    private function getHeader() {
+        // returns a header in "HTTP" form into a form usable with $_SERVER['HEADER']
+        // by converting to uppercase, replaces "-" with "_" and prefixes with "HTTP_"
+        return 'HTTP_' . str_replace("-", "_", strtoupper(get_option('datawiza-jwt-header')));
     }
 
 }

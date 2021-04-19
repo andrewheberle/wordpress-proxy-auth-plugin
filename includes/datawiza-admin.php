@@ -56,12 +56,38 @@ class DatawizaAdmin
       'show_in_rest' => false,
     ));
 
+    register_setting('datawiza-sign-in-widget', 'datawiza-jwks-url', array(
+      'type' => 'string',
+      'show_in_rest' => false,
+    ));
+
+    register_setting('datawiza-sign-in-widget', 'datawiza-jwt-header', array(
+      'type' => 'string',
+      'show_in_rest' => false,
+    ));
+
     add_settings_field(
         'datawiza-private-secret',
         'DW Token Private Secret',
         function() { $this->optionsPageTextInputAction('datawiza-private-secret', 'text', 'Copy paste your JWT\'s private secret here. ', 'It is used for verifying the token. If you are using Datawiza Access Broker, the secret is Provisioning Secret which is the same with the one when you setting up Access Broker'); },
         'datawiza-sign-in-widget',
         'datawiza-sign-in-widget-options-section'
+    );
+
+    add_settings_field(
+      'datawiza-jwks-url',
+      'JWKS URL',
+      function() { $this->optionsPageTextInputAction('datawiza-jwks-url', 'text', 'Enter the JWKS URL to validate the JWT.', 'It is used for verifying the token.'); },
+      'datawiza-sign-in-widget',
+      'datawiza-sign-in-widget-options-section'
+    );
+
+    add_settings_field(
+      'datawiza-jwt-header',
+      'JWKS URL',
+      function() { $this->optionsPageTextInputAction('datawiza-jwt-header', 'text', 'Enter the header that contains the JWT.', 'It is used to retrieve the JWT.'); },
+      'datawiza-sign-in-widget',
+      'datawiza-sign-in-widget-options-section'
     );
   }
 }
