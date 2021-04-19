@@ -19,7 +19,7 @@ require 'includes/datawiza-admin.php';
 use Exception;
 use Firebase\JWT\JWT;
 use Firebase\JWT\SignatureInvalidException;
-use Firebase\JWK\JWK;
+use Firebase\JWT\JWK;
 use Monolog\Handler\FirePHPHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
