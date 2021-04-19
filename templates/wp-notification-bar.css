@@ -19,14 +19,14 @@
   content: "\e668";
 }
 
-.datawiza-notification-bar {
+.jwt-proxy-notification-bar {
   background-color: orange;
   font-size: 14px;
   text-align: center;
   padding: 10px;
 }
 
-.datawiza-notification-bar .icon-close {
+.jwt-proxy-notification-bar .icon-close {
   position: absolute;
   right: 40px;
   cursor: pointer;
